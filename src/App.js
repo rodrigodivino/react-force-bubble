@@ -11,6 +11,7 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 function App() {
   const div = useRef();
   const dimensions = useSizeOf(div);
+
   const [data, fetching] = useCSV(
     "https://raw.githubusercontent.com/curran/data/gh-pages/uci_ml/auto-mpg/auto-mpg.csv"
   );
@@ -18,7 +19,7 @@ function App() {
   return (
     <div className="App" ref={div}>
       {fetching ? (
-        <Loader type="Circles" />
+        <Loader />
       ) : (
         <Circles data={data} dimensions={dimensions}></Circles>
       )}
