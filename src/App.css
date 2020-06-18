@@ -5,3 +5,7 @@ div.App {
   width: 95vw;
   height: 95vh;
 }
+
+circle.mark {
+  stroke: black;
+}

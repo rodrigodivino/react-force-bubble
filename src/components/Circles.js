@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   forceSimulation,
   forceX,
@@ -6,23 +6,53 @@ import {
   forceManyBody,
   forceCollide,
 } from "d3-force";
-import { select, selectAll } from "d3-selection";
+import { select } from "d3-selection";
 import { extent } from "d3-array";
+import { scaleLinear, scaleOrdinal, scalePoint } from "d3-scale";
+import { schemeTableau10 } from "d3-scale-chromatic";
 
 import useInner from "../hooks/useInner";
+import useUnique from "../hooks/useUnique";
 
-const margin = { top: 10, left: 10, right: 10, bottom: 10 };
+const simulation = forceSimulation();
+const margin = { top: 10, left: 300, right: 300, bottom: 10 };
 export default function ({ data, dimensions }) {
   const { width, height } = dimensions;
   const [innerWidth, innerHeight] = useInner(dimensions, margin);
+  const [Xattr, setX] = useState("cylinders");
+
   const plot = useRef();
 
+  const radiusScale = scaleLinear()
+    .domain(extent(data, (d) => d.displacement))
+    .range([4, 10]);
+
+  const colorScale = scaleOrdinal()
+    .domain(useUnique(data, (d) => d.origin))
+    .range(schemeTableau10);
+
+  const xScale = scalePoint()
+    .domain(useUnique(data, (d) => d.cylinders))
+    .range([0, innerWidth]);
+
   useEffect(() => {
-    forceSimulation(data)
-      .force("x", forceX(innerWidth / 2))
+    simulation
+      .nodes(data)
+      .force(
+        "x",
+        forceX((d) => xScale(d.cylinders))
+      )
       .force("y", forceY(innerHeight / 2))
-      .force("collide", forceCollide(5))
-      .force("charge", forceManyBody().strength(-5))
+      .alpha(1.2)
+      .force(
+        "collide",
+        forceCollide((d) => radiusScale(d.displacement))
+      )
+      .force(
+        "charge",
+        forceManyBody().strength((d) => -1.5 * radiusScale(d.displacement))
+      )
+
       .on("tick", () => {
         select(plot.current)
           .selectAll("circle.mark")
@@ -31,9 +61,10 @@ export default function ({ data, dimensions }) {
           .classed("mark", true)
           .attr("cx", (d) => d.x)
           .attr("cy", (d) => d.y)
-          .attr("r", 5);
+          .attr("r", (d) => radiusScale(d.displacement))
+          .attr("fill", (d) => colorScale(d.origin));
       });
-  }, [innerWidth, innerHeight]);
+  }, []);
 
   return (
     <>
