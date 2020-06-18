@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Loader from "react-loader-spinner";
+import { csv } from "d3-fetch";
+import { autoType } from "d3-dsv";
+
+import "./App.css";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 function App() {
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const data = await csv(
+        "https://raw.githubusercontent.com/curran/data/gh-pages/uci_ml/auto-mpg/auto-mpg.csv",
+        autoType
+      );
+      setData(data);
+    }
+    fetchData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Hello World</h1>
+      {data.length === 0 || true ? <Loader type="Circles" /> : <h1>Fetched</h1>}
     </div>
   );
 }
