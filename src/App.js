@@ -22,7 +22,7 @@ function App() {
   return (
     <div className="App">
       <h1>Hello World</h1>
-      {data.length === 0 || true ? <Loader type="Circles" /> : <h1>Fetched</h1>}
+      {data.length === 0 ? <Loader type="Circles" /> : <h1>Fetched</h1>}
     </div>
   );
 }
