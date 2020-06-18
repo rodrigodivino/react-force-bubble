@@ -42,8 +42,8 @@ export default function ({ data, dimensions }) {
         "x",
         forceX((d) => xScale(d[xAttr]))
       )
-      .force("y", forceY(innerHeight / 2))
       .alpha(1)
+      .force("y", forceY(innerHeight / 2))
       .force(
         "collide",
         forceCollide((d) => radiusScale(d.displacement))
@@ -54,6 +54,7 @@ export default function ({ data, dimensions }) {
       )
 
       .on("tick", () => {
+        simulation.tick(3);
         select(plot.current)
           .selectAll("circle.mark")
           .data(data)
@@ -65,7 +66,7 @@ export default function ({ data, dimensions }) {
           .attr("fill", (d) => colorScale(d.origin));
       })
       .restart();
-  }, [xAttr]);
+  }, [xAttr, data, innerWidth, innerHeight, colorScale, radiusScale, xScale]);
 
   useEffect(() => {
     setTimeout(() => {

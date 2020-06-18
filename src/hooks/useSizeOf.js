@@ -30,7 +30,7 @@ export default function (div) {
     setDimensions({ width, height });
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
-  }, [updateSize]);
+  }, [updateSize, div]);
 
   return dimensions;
 }
