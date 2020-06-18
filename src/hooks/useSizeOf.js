@@ -8,7 +8,6 @@ export default function (div) {
   }, [div]);
 
   useLayoutEffect(() => {
-    console.log("trigger");
     updateSize();
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
