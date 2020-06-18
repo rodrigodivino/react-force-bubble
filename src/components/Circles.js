@@ -19,7 +19,7 @@ const margin = { top: 10, left: 300, right: 300, bottom: 10 };
 export default function ({ data, dimensions }) {
   const { width, height } = dimensions;
   const [innerWidth, innerHeight] = useInner(dimensions, margin);
-  const [Xattr, setX] = useState("cylinders");
+  const [xAttr, setX] = useState("cylinders");
 
   const plot = useRef();
 
@@ -32,7 +32,7 @@ export default function ({ data, dimensions }) {
     .range(schemeTableau10);
 
   const xScale = scalePoint()
-    .domain(useUnique(data, (d) => d.cylinders))
+    .domain(useUnique(data, (d) => d[xAttr]))
     .range([0, innerWidth]);
 
   useEffect(() => {
@@ -40,10 +40,10 @@ export default function ({ data, dimensions }) {
       .nodes(data)
       .force(
         "x",
-        forceX((d) => xScale(d.cylinders))
+        forceX((d) => xScale(d[xAttr]))
       )
       .force("y", forceY(innerHeight / 2))
-      .alpha(1.2)
+      .alpha(1)
       .force(
         "collide",
         forceCollide((d) => radiusScale(d.displacement))
@@ -63,7 +63,23 @@ export default function ({ data, dimensions }) {
           .attr("cy", (d) => d.y)
           .attr("r", (d) => radiusScale(d.displacement))
           .attr("fill", (d) => colorScale(d.origin));
-      });
+      })
+      .restart();
+  }, [xAttr]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setX("origin");
+    }, 5000);
+    setTimeout(() => {
+      setX("cylinders");
+    }, 10000);
+    setTimeout(() => {
+      setX("year");
+    }, 15000);
+    setTimeout(() => {
+      setX("mpg");
+    }, 20000);
   }, []);
 
   return (
